@@ -1,0 +1,38 @@
+.common-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.common-input-container input {
+    outline: none;
+    color: rgb(16, 16, 16);
+    border: 1px solid rgb(116, 115, 115);
+    border-radius: 10px;
+    width: 100%;
+    padding: 0.5rem 1rem;
+
+}
+
+.common-input-container:focus-within {
+    border: 1px solid var(--brand-dark);
+}
+
+.common-input-container label {
+    position: absolute;
+    top: 0.5rem;
+    left: 1rem;
+    color: rgb(196, 193, 193);
+    text-transform: capitalize;
+    font-size: 1rem;
+    pointer-events: none;
+    transition: 150ms cubic-bezier(0.4,0,0.2,0.1);
+}
+.common-input-container input:is(:focus,:valid)~ label{
+    transform: translate(0,-1.35rem) scale(0.8);
+    background-color: white;
+    padding-inline: 0.3rem;
+    color: var(--brand-dark);
+}
+input:-webkit-autofill{
+    -webkit-box-shadow:0 0 0 1000px white inset
+}
