@@ -1,0 +1,11 @@
+.blocks img{
+    height: 50px;
+    margin-block: 1rem;
+
+}
+.blocks p{
+    font-weight: lighter;
+}
+.blocks h3{
+    color: var(--brand-dark);
+}

@@ -1,0 +1,27 @@
+.usp-blocks-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+}
+
+.usp-blocks {
+    height: 10rem;
+    width: 16rem;
+    padding: 1rem;
+    border: 1px solid var(--brand-green);
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    text-transform: capitalize;
+}
+
+.usp-blocks:hover{
+    transform: scale(1.1);
+    border: 2px solid;
+}
+.usp-blocks h4{
+    font-weight: bolder;
+    color: var(--brand-green);
+}
+
+

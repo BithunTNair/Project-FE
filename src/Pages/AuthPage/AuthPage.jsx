@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './AuthPage.css'
-import Image from '../../Assets/basketball-net-from-below.jpg'
+import Image from '@Assets/basketball-net-from-below.jpg'
 import LogIn from '../../Components/AuthBox/LogIn'
 import SignUp from '../../Components/AuthBox/SignUp'
 
