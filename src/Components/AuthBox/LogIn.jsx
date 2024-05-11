@@ -21,7 +21,8 @@ function LogIn({ setBoxType }) {
       method: 'POST',
       url: process.env.REACT_APP_BASE_URL + '/auth/dologin',
       data: loginData
-    }).then((res) => {
+    })
+    .then((res) => {
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('user',JSON.stringify( res.data.user))
       dispatch( setUserData(res.data.user))   
@@ -38,11 +39,11 @@ function LogIn({ setBoxType }) {
     <>
       <div className='d-flex flex-column'>
         <div>
-          <Input type={'email'} label={'Email'} value={loginData.email} name={'email'} />
+          <Input type={'email'} label={'Email'} value={loginData.email} name={'email'} onchange={handleLogin}/>
         </div>
 
         <div className=' mt-4' >
-          <Input type={'password'} label={'Password'} value={loginData.password} name={'password'} />
+          <Input type={'password'} label={'Password'} value={loginData.password} name={'password'} onchange={handleLogin} />
         </div>
         <button className='common-btn mt-4 align-self-center' onClick={doLogin}>LogIn</button>
         <p className='account-exist mt-4'>Don't have an account? <i onClick={() => setBoxType('Signup')}>Signup here</i></p>
