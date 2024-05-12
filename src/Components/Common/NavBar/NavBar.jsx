@@ -1,8 +1,12 @@
 import React from 'react'
 import './NavBar.css'
 import textimg from '../../../Assets/running.png'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 function NavBar() {
+  const {user}=useSelector(state=>state.user)
+  const navigate= useNavigate()
     return (
       
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -16,19 +20,19 @@ function NavBar() {
               <li className="nav-item">
                Home
               </li>
-              <li className="nav-item">
-               Features
-              </li>
+             { user.role===1 && <li className="nav-item" onClick={()=>navigate('/newcourt')}>
+              Add New Court 
+              </li>}
             </ul>
             <span className="navbar-text">
             <li className="nav-item dropdown">
           <span className="nav-link dropdown-toggle user" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="true">
-            User
+            {user.firstName+" " +user.lastName}
           </span>
           <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-            <li><span className="dropdown-item">Action</span></li>
-            <li><span className="dropdown-item">Another action</span></li>
-            <li><span className="dropdown-item">Something else here</span></li>
+            <li><span className="dropdown-item">Profile</span></li>
+            {/* <li><span className="dropdown-item">Another action</span></li> */}
+            <li><span className="dropdown-item">Logout</span></li>
           </ul>
         </li>
             </span>
