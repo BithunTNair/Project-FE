@@ -5,6 +5,7 @@ import addIcon from '@Assets/plus-add-new-create-svgrepo-com.svg'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import AxiosInstance from '../../Config/apicall';
+import { ErrorToast, successToast } from '../../Plugins/Toast/Toast';
 
 
 
@@ -24,24 +25,32 @@ function AddNewCourtBox() {
     const handleAddIcon = () => {
         fileInputRef.current.click()
     }
-    const handleDescriptionChange=(data)=>{
-        setCourtData({...courtData,description:data})
+    const handleDescriptionChange = (data) => {
+        setCourtData({ ...courtData, description: data })
     }
-    const handleCreateCourt=()=>{
+    const handleCreateCourt = () => {
 
-const formDatatoSend= FormData()
-selectedFiles.forEach((file)=>{
-    formDatatoSend.append('files',file)
-})
-Object.entries(courtData).forEach(([key,value])=>{
-    formDatatoSend.append(key,value)
-})
+        const formDatatoSend = FormData()
+        selectedFiles.forEach((file) => {
+            formDatatoSend.append('files', file)
+        })
+        Object.entries(courtData).forEach(([key, value]) => {
+            formDatatoSend.append(key, value)
+        })
 
         AxiosInstance({
-            url:'/admin/createnewcourt',
-            method:'POST',
-            data:formDatatoSend
+            url: '/admin/createnewcourt',
+            method: 'POST',
+            data: formDatatoSend,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
 
+        }).then((res)=>{
+            successToast('New court added successfully')
+        })
+        .catch((err)=>{
+            ErrorToast('something went wrong')
         })
     }
 
@@ -112,7 +121,7 @@ Object.entries(courtData).forEach(([key,value])=>{
                         />
                     </div>
                 </div>
-                <ReactQuill className='my-3' style={{height:'300px'}} theme="snow" value={courtData.description} onChange={handleDescriptionChange} />
+                <ReactQuill className='my-3' style={{ height: '300px' }} theme="snow" value={courtData.description} onChange={handleDescriptionChange} />
             </div>
 
 
