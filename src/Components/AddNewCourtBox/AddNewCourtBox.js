@@ -51,7 +51,7 @@ function AddNewCourtBox() {
         })
         .catch((err)=>{
             ErrorToast('something went wrong')
-            console.log(err);
+            
         })
     }
 
