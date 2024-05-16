@@ -21,6 +21,7 @@ function LogIn({ setBoxType }) {
       method: 'POST',
       url: process.env.REACT_APP_BASE_URL + '/auth/dologin',
       data: loginData
+     
     })
     .then((res) => {
       localStorage.setItem('token', res.data.token)

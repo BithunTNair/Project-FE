@@ -6,13 +6,15 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import AxiosInstance from '../../Config/apicall';
 import { ErrorToast, successToast } from '../../Plugins/Toast/Toast';
+import { useNavigate } from 'react-router-dom';
 
 
 
 function AddNewCourtBox() {
     const [courtData, setCourtData] = useState({})
     const fileInputRef = useRef()
-    const [selectedFiles, setSelectedFiles] = useState([])
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const navigate=useNavigate();
     const handleChange = (e) => {
         setCourtData({ ...courtData, [e.target.name]: e.target.value })
     }
@@ -25,12 +27,12 @@ function AddNewCourtBox() {
     const handleAddIcon = () => {
         fileInputRef.current.click()
     }
-    const handleDescriptionChange = (data) => {
-        setCourtData({ ...courtData, description: data })
+    const handleDescriptionChange = (e) => {
+        setCourtData({ ...courtData, description: e })
     }
     const handleCreateCourt = () => {
 
-        const formDatatoSend = FormData()
+        const formDatatoSend = new FormData()
         selectedFiles.forEach((file) => {
             formDatatoSend.append('files', file)
         })
@@ -46,13 +48,14 @@ function AddNewCourtBox() {
                 'Content-Type': 'multipart/form-data'
             }
 
-        }).then((res)=>{
-            successToast('New court added successfully')
+        }).then((res) => {
+            successToast('New court added successfully');
+            navigate('/home')
         })
-        .catch((err)=>{
-            ErrorToast('something went wrong')
-            
-        })
+            .catch((err) => {
+                ErrorToast('something went wrong')
+
+            })
     }
 
     return (
