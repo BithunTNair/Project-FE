@@ -1,9 +1,13 @@
 import React from 'react'
 import './Cards.css'
+import {  useNavigate } from 'react-router-dom'
 
 function Cards() {
+    const navigate= useNavigate()
     return (
-        <div className='card'>
+        <div className='card' onClick={()=>{
+            navigate('/courts/courtdetails')
+        }}>
             <img src="" alt="" />
             <div className='card-content'>
                 <h2>Court Name</h2>

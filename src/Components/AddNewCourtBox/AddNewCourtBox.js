@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import './AddNewCourtBox.css'
 import Input from '../Common/InputField/Input'
-import addIcon from '@Assets/plus-add-new-create-svgrepo-com.svg'
+import addIcon from '@Assets/addicon.svg'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import AxiosInstance from '../../Config/apicall';
@@ -14,7 +14,7 @@ function AddNewCourtBox() {
     const [courtData, setCourtData] = useState({})
     const fileInputRef = useRef()
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     const handleChange = (e) => {
         setCourtData({ ...courtData, [e.target.name]: e.target.value })
     }
