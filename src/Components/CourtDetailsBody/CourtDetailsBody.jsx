@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './CourtDetailsBody.css'
 import Img from '@Assets/throwing-basketball.jpg'
 import editIcon from '@Assets/edit.svg'
@@ -14,17 +14,33 @@ import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRange } from 'react-date-range'
 import Input from '../Common/InputField/Input'
+import { useParams } from 'react-router-dom'
+import AxiosInstance from '../../Config/apicall'
 
 
 function CourtDetailsBody() {
+    const { id } = useParams();
     const [openTimeslot, setOpenTimeslot] = useState(false);
     const [dateRange, setDateRange] = useState({
         startDate: null,
         endDate: null,
         key: "selection",
     });
+    const [singleCourtData, setSingleCourtData] = useState({});
     const [calenderOpen, setcalenderOpen] = useState(false);
     const [open, setOpen] = useState(false);
+    useEffect(() => {
+        getSingleCourtData()
+    }, []);
+    const getSingleCourtData = () => {
+        AxiosInstance.get('/users/getsinglecourtdata', { params: { courtId: id } })
+            .then((response) => {
+                setSingleCourtData(response.data)
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    }
     const closeList = (e) => {
         e.stopPropagation()
         setOpen(false)
@@ -35,8 +51,9 @@ function CourtDetailsBody() {
                 <img className='details-main-img' src={Img} alt="" />
                 <div className='details-img-content d-flex justify-content-between p-4'>
                     <div className='d-flex flex-column justify-content-center text-white'>
-                        <h2>court name</h2>
-                        <p>location</p>
+                        <h2>{singleCourtData.name}</h2>
+                        <p>{singleCourtData.location}</p>
+                        <p>{singleCourtData.type}</p>
                     </div>
                     <div className='align-self-end d-flex gap-3'>
                         <button> Book </button>
@@ -56,7 +73,7 @@ function CourtDetailsBody() {
 
                 theme='bubble'
                 className=''
-                value={'gggg'}
+                value={singleCourtData.description}
 
             />
             {openTimeslot && <Modal heading={'Add new time slot data'} closeModal={() => { setOpenTimeslot(false) }}>
@@ -89,8 +106,8 @@ function CourtDetailsBody() {
                         />
 
                         <div className='d-flex justify-content-end gap-3 p-2 mt-2'>
-                            <button className='cmn-btn bg-black text-white'>Cancel</button>
-                            <button className='cmn-btn'>Select</button>
+                            <button className='common-btn bg-black text-white'>Cancel</button>
+                            <button className='common-btn'>Select</button>
                         </div>
                     </div>}
                     <div className='mt-2'>
@@ -107,8 +124,8 @@ function CourtDetailsBody() {
                         </ul>}
                     </div>
                     <div className='d-flex justify-content-end gap-3 py-2 mt-2'>
-                        <button className='cmn-btn '>Cancel</button>
-                        <button className='cmn-btn '>Create</button>
+                        <button className='common-btn '>Cancel</button>
+                        <button className='common-btn '>Create</button>
                     </div>
                 </div>
             </Modal>}
