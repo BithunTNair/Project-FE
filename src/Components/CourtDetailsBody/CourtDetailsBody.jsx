@@ -17,6 +17,9 @@ import Input from '../Common/InputField/Input'
 import { useParams } from 'react-router-dom'
 import AxiosInstance from '../../Config/apicall';
 import { TIMINGS } from '../../Constants/constants'
+import { ErrorToast, successToast } from '../../Plugins/Toast/Toast'
+import { useDispatch } from 'react-redux'
+import { showorhideLoader } from '../../Redux/generalSlice'
 
 
 function CourtDetailsBody() {
@@ -32,6 +35,8 @@ function CourtDetailsBody() {
     const [open, setOpen] = useState(false);
     const [selectedSlots, setSelectedSlots] = useState([]);
     const [filteredTimings, setFilteredTimings] = useState(TIMINGS);
+    const [cost,setCost]= useState('');
+    const dispatch=useDispatch()
     useEffect(() => {
         getSingleCourtData()
     }, []);
@@ -51,6 +56,30 @@ function CourtDetailsBody() {
         setFilteredTimings(newFilter);
         setOpen(false);
     }
+const createCourtSchedule=()=>{
+    dispatch(showorhideLoader(true));
+    AxiosInstance({
+        url:'/admin/createshedules',
+        method:'POST',
+        data:{
+            startDate:dateRange.startDate,
+            endDate:dateRange.endDate,
+            cost:cost,
+            selectedSlots:selectedSlots,
+            courtId:id
+        }
+    }).then((res)=>{
+        successToast('Court was created successfully');
+        setOpenTimeslot(false);
+        dispatch(showorhideLoader(false));
+    })
+    .catch((err)=>{console.log(err)
+        dispatch(showorhideLoader(false));
+        ErrorToast('Failed your attempt');
+       
+    })
+}
+
     return (
         <div className='details-page'>
             <div className='details-img-box '>
@@ -116,11 +145,11 @@ function CourtDetailsBody() {
                         />
 
                         <div className='d-flex justify-content-end gap-3 p-2 mt-2'>
-                            <button className='common-btn' onClick={}>Select</button>
+                            <button className='common-btn' onClick={()=>{setcalenderOpen(false)}}>Select</button>
                         </div>
                     </div>}
                     <div className='mt-2'>
-                        <Input name={'cost'} label={'Cost'} value={''} />
+                        <Input name={'cost'} label={'Cost'} value={cost} onchange={(e)=>{setCost(e.target.value)}} />
                     </div>
                     <div className='range-label position-relative mt-3' onClick={() => { setOpen(true) }}>
                         Select Slots
@@ -136,7 +165,7 @@ function CourtDetailsBody() {
 
                     <div className='d-flex justify-content-end gap-3 py-2 mt-2'>
                         <button className='common-btn '>Cancel</button>
-                        <button className='common-btn '>Create</button>
+                        <button className='common-btn ' onClick={createCourtSchedule}>Create</button>
                     </div>
                 </div>
             </Modal>}
