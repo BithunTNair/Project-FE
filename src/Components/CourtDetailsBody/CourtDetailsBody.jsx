@@ -15,7 +15,8 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRange } from 'react-date-range'
 import Input from '../Common/InputField/Input'
 import { useParams } from 'react-router-dom'
-import AxiosInstance from '../../Config/apicall'
+import AxiosInstance from '../../Config/apicall';
+import { TIMINGS } from '../../Constants/constants'
 
 
 function CourtDetailsBody() {
@@ -29,6 +30,8 @@ function CourtDetailsBody() {
     const [singleCourtData, setSingleCourtData] = useState({});
     const [calenderOpen, setcalenderOpen] = useState(false);
     const [open, setOpen] = useState(false);
+    const [selectedSlots, setSelectedSlots] = useState([]);
+    const [filteredTimings, setFilteredTimings] = useState(TIMINGS);
     useEffect(() => {
         getSingleCourtData()
     }, []);
@@ -41,9 +44,12 @@ function CourtDetailsBody() {
                 console.log(err);
             })
     }
-    const closeList = (e) => {
+    const selectSlot = (e, slot) => {
         e.stopPropagation()
-        setOpen(false)
+        setSelectedSlots([...selectedSlots, slot]);
+        const newFilter = filteredTimings.filter(element => element.id !== slot.id);
+        setFilteredTimings(newFilter);
+        setOpen(false);
     }
     return (
         <div className='details-page'>
@@ -85,9 +91,13 @@ function CourtDetailsBody() {
                         <img src={calenderIcon} height={'20px'} alt="" onClick={() => { setcalenderOpen(true) }} />
                     </label>
                     <div className='d-flex align-items-center gap-2 mt-2'>
-                        <div className='timeslot-date flex-grow-1 border border-1 rounded-2 p-2'>Date</div>
+                        <div className='timeslot-date flex-grow-1 border border-1 rounded-2 p-2'>
+                            {new Date(dateRange.startDate).toLocaleDateString()}
+                        </div>
                         <img src={forwardIcon} alt="" height={'20px'} />
-                        <div className='timeslot-date flex-grow-1 border border-1 rounded-2 p-2'>Date</div>
+                        <div className='timeslot-date flex-grow-1 border border-1 rounded-2 p-2'>
+                            {new Date(dateRange.endDate).toLocaleDateString()}
+                        </div>
                     </div>
                     {calenderOpen && <div className='calender-box'>
                         <img
@@ -106,8 +116,7 @@ function CourtDetailsBody() {
                         />
 
                         <div className='d-flex justify-content-end gap-3 p-2 mt-2'>
-                            <button className='common-btn bg-black text-white'>Cancel</button>
-                            <button className='common-btn'>Select</button>
+                            <button className='common-btn' onClick={}>Select</button>
                         </div>
                     </div>}
                     <div className='mt-2'>
@@ -116,13 +125,15 @@ function CourtDetailsBody() {
                     <div className='range-label position-relative mt-3' onClick={() => { setOpen(true) }}>
                         Select Slots
                         {open && <ul className='slot-list'>
-                            <li onClick={closeList}>hhhhhh</li>
-                            <li onClick={closeList}>hhhhhh</li>
-                            <li onClick={closeList}>hhhhhh</li>
-                            <li onClick={closeList}>hhhhhh</li>
-                            <li onClick={closeList}>hhhhhh</li>
+                            {filteredTimings.map((slot) => <li onClick={(e) => selectSlot(e, slot)}>{slot.name}</li>)}
+
+
                         </ul>}
                     </div>
+                    <div className='d-flex gap-2 mt-2 flex-wrap py-2'>
+                        {selectedSlots.map(slot => <span className='border border-1 rounded-2 px-2 py-1'>{slot.name}</span>)}
+                    </div>
+
                     <div className='d-flex justify-content-end gap-3 py-2 mt-2'>
                         <button className='common-btn '>Cancel</button>
                         <button className='common-btn '>Create</button>
