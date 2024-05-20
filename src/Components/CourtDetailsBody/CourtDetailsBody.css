@@ -81,3 +81,18 @@
     overflow-y: auto;
     font-size: small;
 }
+.availableslots{
+    border: 1px solid var(--brand-green);
+    color: var(--brand-dark);
+    background-color: rgba(104, 208, 104, 0.7);
+    border-radius: 5px;
+    cursor: pointer;
+}
+.notavailableslots{
+    border: 1px solid rgb(181, 177, 177);
+    border-radius: 5px;
+    color: rgb(181, 177, 177);
+    background-color: rgb(181, 177, 177);
+    cursor: not-allowed;
+
+}
