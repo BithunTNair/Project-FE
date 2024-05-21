@@ -50,7 +50,7 @@ function CourtDetailsBody() {
     }, [selectedDate]);
     const getSlotData = () => {
         dispatch(showorhideLoader(true));
-        AxiosInstance.get('/users/getslotdata', { params: { courtId: id , date: selectedDate} }).then((res) => {
+        AxiosInstance.get('/users/getslotdata', { params: { courtId: id, date: selectedDate } }).then((res) => {
             setSlotData(res.data);
             dispatch(showorhideLoader(false));
         })
@@ -105,201 +105,203 @@ function CourtDetailsBody() {
         if (bookedSlots.find((element) => element._id === slot._id)) {
             const temp = bookedSlots.filter(element => element._id !== slot._id);
             setBookedSlots(temp)
-        }else{
-            setBookedSlots([...bookedSlots,slot]);
+        } else {
+            setBookedSlots([...bookedSlots, slot]);
         }
 
     };
-    const createBooking=()=>{
 
+
+    async function createBooking() {
+        const res = await loadScript(
+            "https://checkout.razorpay.com/v1/checkout.js"
+        );
+
+        if (!res) {
+            ErrorToast("Razorpay SDK failed to load. Are you online?");
+            return;
+        }
+        const slotIds = bookedSlots.map((ele) => { return ele._id })
+        // creating a new order
+        const result = await AxiosInstance.post("/payments/orders", { courtId: id, slotIds: slotIds });
+
+        if (!result) {
+            ErrorToast("Server error. Are you online?");
+            return;
+        }
+
+        // Getting the order details back
+        const { amount, id: order_id, currency, receipt } = result.data;
+
+        const options = {
+            key:process.env.REACT_APP_RP_KEY_ID , 
+            amount: amount.toString(),
+            currency: currency,
+            name: "green grid pvt-ltd",
+            description: "for payments",
+            image: null,
+            order_id: order_id,
+            handler: async function (response) {
+                const data = {
+                    orderCreationId: order_id,
+                    razorpayPaymentId: response.razorpay_payment_id,
+                    razorpayOrderId: response.razorpay_order_id,
+                    razorpaySignature: response.razorpay_signature,
+                    receipt,
+                    slotIds,
+                    courtId:id,
+                    date:selectedDate
+                };
+
+                const result = await AxiosInstance.post("/payments/verify", data);
+                setBookingModal(false);
+                getSlotData();
+
+                successToast(result.data.msg);
+            },
+            // prefill: {
+            //     name: "Soumya Dey",
+            //     email: "SoumyaDey@example.com",
+            //     contact: "9999999999",
+            // },
+            // notes: {
+            //     address: "Soumya Dey Corporate Office",
+            // },
+            theme: {
+                color: "#61dafb",
+            },
+        };
+
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+    };
+    function loadScript(src) {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
+            };
+            document.body.appendChild(script);
+        });
     }
+    return (
+        <div className='details-page'>
+            <div className='details-img-box '>
+                <img className='details-main-img' src={Img} alt="" />
+                <div className='details-img-content d-flex justify-content-between p-4'>
+                    <div className='d-flex flex-column justify-content-center text-white'>
+                        <h2>{singleCourtData.name}</h2>
+                        <p>{singleCourtData.location}</p>
+                        <p>{singleCourtData.type}</p>
+                    </div>
+                    <div className='align-self-end d-flex gap-3'>
+                        <button onClick={() => { setBookingModal(true) }} > Book </button>
+                        <button> <img src={editIcon} height={'20px'} alt="" /> </button>
+                        <button> <img src={filesIcon} height={'20px'} alt="" /> </button>
+                        <button> <img src={addIcon} height={'20px'} alt="" onClick={() => { setOpenTimeslot(true) }} /> </button>
 
-    // async function createBooking() {
-    //     const res = await loadScript(
-    //         "https://checkout.razorpay.com/v1/checkout.js"
-    //     );
-
-    //     if (!res) {
-    //         ErrorToast("Razorpay SDK failed to load. Are you online?");
-    //         return;
-    //     }
-    //     const slotIds = bookedSlots.map((ele) => { return ele._id })
-    //     // creating a new order
-    //     const result = await AxiosInstance.post("/payments/orders", { courtId: id, slotIds: slotIds });
-
-    //     if (!result) {
-    //         ErrorToast("Server error. Are you online?");
-    //         return;
-    //     }
-
-    //     // Getting the order details back
-    //     const { amount, id: order_id, currency, receipt } = result.data;
-
-    //     const options = {
-    //         key: "rzp_test_r6FiJfddJh76SI", // Enter the Key ID generated from the Dashboard
-    //         amount: amount.toString(),
-    //         currency: currency,
-    //         name: "Soumya Corp.",
-    //         description: "Test Transaction",
-    //         // image: { logo },
-    //         order_id: order_id,
-    //         handler: async function (response) {
-    //             const data = {
-    //                 orderCreationId: order_id,
-    //                 razorpayPaymentId: response.razorpay_payment_id,
-    //                 razorpayOrderId: response.razorpay_order_id,
-    //                 razorpaySignature: response.razorpay_signature,
-    //             };
-
-    //             const result = await axios.post("http://localhost:5000/payment/success", data);
-
-    //             alert(result.data.msg);
-    //         },
-    //         prefill: {
-    //             name: "Soumya Dey",
-    //             email: "SoumyaDey@example.com",
-    //             contact: "9999999999",
-    //         },
-    //         notes: {
-    //             address: "Soumya Dey Corporate Office",
-    //         },
-    //         theme: {
-    //             color: "#61dafb",
-    //         },
-    //     };
-
-    //     const paymentObject = new window.Razorpay(options);
-    //     paymentObject.open();
-    // };
-    // function loadScript(src) {
-    //     return new Promise((resolve) => {
-    //         const script = document.createElement("script");
-    //         script.src = src;
-    //         script.onload = () => {
-    //             resolve(true);
-    //         };
-    //         script.onerror = () => {
-    //             resolve(false);
-    //         };
-    //         document.body.appendChild(script);
-    //     });
-
-
-
-
-        return (
-            <div className='details-page'>
-                <div className='details-img-box '>
-                    <img className='details-main-img' src={Img} alt="" />
-                    <div className='details-img-content d-flex justify-content-between p-4'>
-                        <div className='d-flex flex-column justify-content-center text-white'>
-                            <h2>{singleCourtData.name}</h2>
-                            <p>{singleCourtData.location}</p>
-                            <p>{singleCourtData.type}</p>
-                        </div>
-                        <div className='align-self-end d-flex gap-3'>
-                            <button onClick={() => { setBookingModal(true) }} > Book </button>
-                            <button> <img src={editIcon} height={'20px'} alt="" /> </button>
-                            <button> <img src={filesIcon} height={'20px'} alt="" /> </button>
-                            <button> <img src={addIcon} height={'20px'} alt="" onClick={() => { setOpenTimeslot(true) }} /> </button>
-
-
-                        </div>
 
                     </div>
 
                 </div>
 
-
-                <ReactQuill readOnly={true}
-
-                    theme='bubble'
-                    className=''
-                    value={singleCourtData.description}
-
-                />
-                {openTimeslot && (<Modal heading={'Add new time slot data'} closeModal={() => { setOpenTimeslot(false) }}>
-
-
-                    <div className='time-slot-select-modal p-3'>
-                        <label htmlFor=""> Select Date Range
-
-                            <img src={calenderIcon} height={'20px'} alt="" onClick={() => { setcalenderOpen(true) }} />
-                        </label>
-                        <div className='d-flex align-items-center gap-2 mt-2'>
-                            <div className='timeslot-date flex-grow-1 border border-1 rounded-2 p-2'>
-                                {new Date(dateRange.startDate).toLocaleDateString()}
-                            </div>
-                            <img src={forwardIcon} alt="" height={'20px'} />
-                            <div className='timeslot-date flex-grow-1 border border-1 rounded-2 p-2'>
-                                {new Date(dateRange.endDate).toLocaleDateString()}
-                            </div>
-                        </div>
-                        {calenderOpen && <div className='calender-box'>
-                            <img
-                                src={closeIcon}
-                                height={'20px'}
-                                alt=""
-                                className='modal-close-icon'
-                                onClick={() => { setcalenderOpen(false) }}
-                            />
-                            <DateRange
-                                editableDateInputs={true}
-                                onChange={item => setDateRange(item.selection)}
-                                moveRangeOnFirstSelection={false}
-                                ranges={[dateRange]}
-
-                            />
-
-                            <div className='d-flex justify-content-end gap-3 p-2 mt-2'>
-                                <button className='common-btn' onClick={() => { setcalenderOpen(false) }}>Select</button>
-                            </div>
-                        </div>}
-                        <div className='mt-2'>
-                            <Input name={'cost'} label={'Cost'} value={cost} onchange={(e) => { setCost(e.target.value) }} />
-                        </div>
-                        <div className='range-label position-relative mt-3' onClick={() => { setOpen(true) }}>
-                            Select Slots
-                            {open && <ul className='slot-list'>
-                                {filteredTimings.map((slot) => <li onClick={(e) => selectSlot(e, slot)}>{slot.name}</li>)}
-
-
-                            </ul>}
-                        </div>
-                        <div className='d-flex gap-2 mt-2 flex-wrap py-2'>
-                            {selectedSlots.map(slot => <span className='border border-1 rounded-2 px-2 py-1'>{slot.name}</span>)}
-                        </div>
-                        <div className='d-flex justify-content-end gap-3 py-2 mt-2'>
-                            <button className='common-btn '>Cancel</button>
-                            <button className='common-btn ' onClick={createCourtSchedule}>Create</button>
-                        </div>
-                    </div>
-                </Modal>)};
-                {bookingModal && <Modal heading={'Booking slots'} closeModal={() => { setBookingModal(false) }}>
-                    <div className='time-slot-select-modal p-3 h-100 d-flex flex-column'>
-                        <label htmlFor="" className='mt-2'> Start Date :</label>
-                        <input type="date" className='px-2 mx-2 border rounded 1' value={selectedDate} min={new Date().toISOString().substr(0, 10)}
-                            onChange={(e) => { setSelectedDate(e.target.value) }} />
-                        <label htmlFor="">Available Slots</label>
-                        <div className='d-flex flex-wrap gap-2 mt-2'>
-
-                            {slotData.map((slot) => <span className={`${bookedSlots.find(element => element._id === slot._id) ? 'bg-info-subtle ' :
-
-                                slot.slot.bookedBy ? 'notavailableslots' : 'availableslots'}  px-2 py-2 mt-2`}
-                                onClick={() => sectorDeslectslot(slot)}
-                            >{slot.slot.name}</span>)}
-                        </div>
-
-                        <div className='d-flex justify-content-end gap-3 py-2 mt-2'>
-                            <button className='common-btn bg-black text-white'>Cancel</button>
-                            <button className='common-btn' onClick={createBooking}>Book</button>
-                        </div>
-
-                    </div>
-
-                </Modal>}
             </div>
-        )
-    }
+
+
+            <ReactQuill readOnly={true}
+
+                theme='bubble'
+                className=''
+                value={singleCourtData.description}
+
+            />
+            {openTimeslot && (<Modal heading={'Add new time slot data'} closeModal={() => { setOpenTimeslot(false) }}>
+
+
+                <div className='time-slot-select-modal p-3'>
+                    <label htmlFor=""> Select Date Range
+
+                        <img src={calenderIcon} height={'20px'} alt="" onClick={() => { setcalenderOpen(true) }} />
+                    </label>
+                    <div className='d-flex align-items-center gap-2 mt-2'>
+                        <div className='timeslot-date flex-grow-1 border border-1 rounded-2 p-2'>
+                            {new Date(dateRange.startDate).toLocaleDateString()}
+                        </div>
+                        <img src={forwardIcon} alt="" height={'20px'} />
+                        <div className='timeslot-date flex-grow-1 border border-1 rounded-2 p-2'>
+                            {new Date(dateRange.endDate).toLocaleDateString()}
+                        </div>
+                    </div>
+                    {calenderOpen && <div className='calender-box'>
+                        <img
+                            src={closeIcon}
+                            height={'20px'}
+                            alt=""
+                            className='modal-close-icon'
+                            onClick={() => { setcalenderOpen(false) }}
+                        />
+                        <DateRange
+                            editableDateInputs={true}
+                            onChange={item => setDateRange(item.selection)}
+                            moveRangeOnFirstSelection={false}
+                            ranges={[dateRange]}
+
+                        />
+
+                        <div className='d-flex justify-content-end gap-3 p-2 mt-2'>
+                            <button className='common-btn' onClick={() => { setcalenderOpen(false) }}>Select</button>
+                        </div>
+                    </div>}
+                    <div className='mt-2'>
+                        <Input name={'cost'} label={'Cost'} value={cost} onchange={(e) => { setCost(e.target.value) }} />
+                    </div>
+                    <div className='range-label position-relative mt-3' onClick={() => { setOpen(true) }}>
+                        Select Slots
+                        {open && <ul className='slot-list'>
+                            {filteredTimings.map((slot) => <li onClick={(e) => selectSlot(e, slot)}>{slot.name}</li>)}
+
+
+                        </ul>}
+                    </div>
+                    <div className='d-flex gap-2 mt-2 flex-wrap py-2'>
+                        {selectedSlots.map(slot => <span className='border border-1 rounded-2 px-2 py-1'>{slot.name}</span>)}
+                    </div>
+                    <div className='d-flex justify-content-end gap-3 py-2 mt-2'>
+                        <button className='common-btn '>Cancel</button>
+                        <button className='common-btn ' onClick={createCourtSchedule}>Create</button>
+                    </div>
+                </div>
+            </Modal>)};
+            {bookingModal && <Modal heading={'Booking slots'} closeModal={() => { setBookingModal(false) }}>
+                <div className='time-slot-select-modal p-3 h-100 d-flex flex-column'>
+                    <label htmlFor="" className='mt-2'> Start Date : {''} </label>
+                    <input type="date" className='p-1 px-2 mx-2 border rounded-1' value={selectedDate} min={new Date().toISOString().substr(0, 10)}
+                        onChange={(e) => setSelectedDate(e.target.value)} />
+                    <label htmlFor="">Available Slots</label>
+                    <div className='d-flex flex-wrap gap-2 mt-2'>
+
+                        {slotData.map((slot) => <span className={`${bookedSlots.find(element => element._id === slot._id) ? 'bg-info-subtle ' :
+
+                           slot.bookedBy ? 'notavailableslots' : 'availableslots'}  px-2 py-2 mt-2`}
+                            onClick={() => !slot.bookedBy && sectorDeslectslot(slot)}
+                        >{slot.slot.name}</span>)}
+                    </div>
+
+                    <div className='d-flex justify-content-end gap-3 py-2 mt-2'>
+                        <button className='common-btn bg-black text-white'> {' '} Cancel</button>
+                        <button className='common-btn' onClick={createBooking}>Book</button>
+                    </div>
+
+                </div>
+
+            </Modal>}
+        </div>
+    )
+}
+
 
 export default CourtDetailsBody
