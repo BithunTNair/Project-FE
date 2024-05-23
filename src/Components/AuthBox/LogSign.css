@@ -1,7 +1,11 @@
 .account-exist{
-    font-size: 0.5rem;
+    font-size: 0.9rem;
 }
 .account-exist i{
     color: black;
     font-style: italic;
+}
+.icn{
+    cursor: pointer;
+
 }

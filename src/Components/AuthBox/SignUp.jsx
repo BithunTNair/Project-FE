@@ -56,7 +56,7 @@ dispatch(showorhideLoader(false))
           <Input type={'password'} label={'Confirm Password'} name={'confirmPassword'} value={signupData.confirmPassword} onchange={handleChange} />
         </div>
         <button className='common-btn mt-4 align-self-center' onClick={doSignup}>Signup</button>
-        <p className='account-exist mt-4'>Already have an account? <i onClick={() => setBoxType('login')}>Login here</i></p>
+        <p className='account-exist mt-4'>Already have an account? <i className='icn' onClick={() => setBoxType('login')}>Login here</i></p>
       </div>
     </div>
   )

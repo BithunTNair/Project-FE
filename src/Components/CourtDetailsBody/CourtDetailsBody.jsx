@@ -20,7 +20,7 @@ import { TIMINGS } from '../../Constants/constants'
 import { ErrorToast, successToast } from '../../Plugins/Toast/Toast'
 import { useDispatch } from 'react-redux'
 import { showorhideLoader } from '../../Redux/generalSlice';
-import axios from 'axios';
+
 
 
 function CourtDetailsBody() {
@@ -101,7 +101,7 @@ function CourtDetailsBody() {
             })
     };
 
-    const sectorDeslectslot = (slot) => {
+    const setorDeslectslot = (slot) => {
         if (bookedSlots.find((element) => element._id === slot._id)) {
             const temp = bookedSlots.filter(element => element._id !== slot._id);
             setBookedSlots(temp)
@@ -126,7 +126,7 @@ function CourtDetailsBody() {
         const result = await AxiosInstance.post("/payments/orders", { courtId: id, slotIds: slotIds });
 
         if (!result) {
-            ErrorToast("Server error. Are you online?");
+            alert("Server error. Are you online?");
             return;
         }
 
@@ -134,7 +134,7 @@ function CourtDetailsBody() {
         const { amount, id: order_id, currency, receipt } = result.data;
 
         const options = {
-            key:process.env.REACT_APP_RP_KEY_ID , 
+            key: process.env.REACT_APP_RP_KEY_ID,
             amount: amount.toString(),
             currency: currency,
             name: "green grid pvt-ltd",
@@ -149,8 +149,8 @@ function CourtDetailsBody() {
                     razorpaySignature: response.razorpay_signature,
                     receipt,
                     slotIds,
-                    courtId:id,
-                    date:selectedDate
+                    courtId: id,
+                    date: selectedDate
                 };
 
                 const result = await AxiosInstance.post("/payments/verify", data);
@@ -159,14 +159,14 @@ function CourtDetailsBody() {
 
                 successToast(result.data.msg);
             },
-            // prefill: {
-            //     name: "Soumya Dey",
-            //     email: "SoumyaDey@example.com",
-            //     contact: "9999999999",
-            // },
-            // notes: {
-            //     address: "Soumya Dey Corporate Office",
-            // },
+            prefill: {
+                name: "Soumya Dey",
+                email: "SoumyaDey@example.com",
+                contact: "9999999999",
+            },
+            notes: {
+                address: "Soumya Dey Corporate Office",
+            },
             theme: {
                 color: "#61dafb",
             },
@@ -286,8 +286,8 @@ function CourtDetailsBody() {
 
                         {slotData.map((slot) => <span className={`${bookedSlots.find(element => element._id === slot._id) ? 'bg-info-subtle ' :
 
-                           slot.bookedBy ? 'notavailableslots' : 'availableslots'}  px-2 py-2 mt-2`}
-                            onClick={() => !slot.bookedBy && sectorDeslectslot(slot)}
+                            slot.bookedBy ? 'notavailableslots' : 'availableslots'}  px-2 py-2 mt-2`}
+                            onClick={() => !slot.bookedBy && setorDeslectslot(slot)}
                         >{slot.slot.name}</span>)}
                     </div>
 

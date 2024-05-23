@@ -47,7 +47,7 @@ function LogIn({ setBoxType }) {
           <Input type={'password'} label={'Password'} value={loginData.password} name={'password'} onchange={handleLogin} />
         </div>
         <button className='common-btn mt-4 align-self-center' onClick={doLogin}>LogIn</button>
-        <p className='account-exist mt-4'>Don't have an account? <i onClick={() => setBoxType('Signup')}>Signup here</i></p>
+        <p className='account-exist mt-4'>Don't have an account? <i className='icn' onClick={() => setBoxType('Signup')}>Signup here</i></p>
       </div>
 
 

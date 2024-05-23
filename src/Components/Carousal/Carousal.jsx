@@ -1,6 +1,8 @@
 import React from 'react'
 import './Carousal.css'
-import  carousalImg  from '@Assets/duffy-brook-IwDTKKFmWAc-unsplashu.jpg'
+import  carousalImg  from '@Assets/duffy-brook-IwDTKKFmWAc-unsplashu.jpg';
+import carousalImg2 from  '@Assets/turfimg.avif';
+import carousalImg3 from  '@Assets/turfimg3.avif';
 
 function Carousal() {
   return (
@@ -14,21 +16,21 @@ function Carousal() {
       <div className="carousel-item active">
         <img src= {carousalImg} className="d-block w-100" alt="..."/>
         <div className="carousel-caption d-none d-md-block">
-          <h5>Let's Play Football</h5>
+          <h5>Let's Play The Game</h5>
           <p>Discover joy in every jump, laughter in every swing.</p>
         </div>
       </div>
       <div className="carousel-item">
-        <img src= {carousalImg} className="d-block w-100" alt="..."/>
+        <img src= {carousalImg2} className="d-block w-100" alt="..."/>
         <div className="carousel-caption d-none d-md-block">
-          <h5>Let's Play Football</h5>
+          <h5>Let's Play The Game</h5>
           <p>Play is the key to a happy heart. Dive into the fun!</p>
         </div>
       </div>
       <div className="carousel-item">
-        <img src= {carousalImg} className="d-block w-100" alt="..."/>
+        <img src= {carousalImg3} className="d-block w-100" alt="..."/>
         <div className="carousel-caption d-none d-md-block">
-          <h5>Let's Play Football</h5>
+          <h5>Let's Play The Game</h5>
           <p>Little moments, big memories - let the playground adventures begin!</p>
         </div>
       </div>
